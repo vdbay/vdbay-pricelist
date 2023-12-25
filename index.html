@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VDBay Pricelist</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #121212;
+            color: #fff;
+            padding: 20px;
+            font-family: "Montserrat";
+        }
+
+        .container {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100%;
+            position: fixed;
+            background-color: #333;
+            overflow-y: auto;
+            transition: 0.5s;
+            padding-left: 10px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            /* Added flex display */
+            flex-direction: column;
+            /* Added column direction for vertical alignment */
+            align-items: center;
+            /* Center child elements horizontally */
+        }
+
+        .card {
+            background-color: #333;
+            color: #fff;
+            margin-bottom: 20px;
+            transition: 0.3s;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            /* Material guideline: Remove box shadow from cards */
+            border-radius: 8px;
+            /* Material guideline: Apply rounded corners to cards */
+            cursor: pointer;
+        }
+
+        .card:hover {
+            background-color: #555;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            /* Add a box shadow on hover for a raised effect */
+        }
+
+        .card:hover a {
+            color: #ffeb3b;
+            /* Change the text color on hover */
+        }
+
+        .card img {
+            max-width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            align-self: center;
+        }
+
+        .card a {
+            text-decoration: none;
+            color: #fff;
+            display: block;
+            transition: color 0.3s;
+            /* Add a smooth color transition on hover */
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 0 20px;
+            background-color: #121212;
+        }
+
+        .logo {
+            max-width: 100%;
+            max-height: 150px;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            /* Material guideline: Apply rounded corners to images */
+        }
+
+        .game-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 18px;
+        }
+
+        .game-info-card {
+            background-color: #333;
+            color: #fff;
+            margin-bottom: 10px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            border: none;
+            /* Material guideline: Remove box shadow from cards */
+            border-radius: 8px;
+            /* Material guideline: Apply rounded corners to cards */
+            cursor: pointer;
+        }
+
+        .game-info-card:hover {
+            background-color: #555;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            /* Add a box shadow on hover for a raised effect */
+        }
+
+        .game-info-card a {
+            /* ... (existing styles) ... */
+            transition: color 0.3s;
+            /* Add a smooth color transition on hover */
+        }
+
+        .game-info-card:hover a {
+            color: #ffeb3b;
+            /* Change the text color on hover */
+        }
+
+        .game-info-card img {
+            max-width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            /* Material guideline: Apply rounded corners to images */
+        }
+
+        .game-info-card .game-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .game-info-card .price {
+            font-size: 18px;
+        }
+
+        .game-info-card:hover .game-title,
+        .game-info-card:hover .price {
+            color: #ffeb3b;
+            /* Change the text color on hover */
+        }
+
+        .sidebar-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        .sidebar-text img {
+            max-width: 100%;
+            max-height: 80px;
+            /* Adjust the height as needed */
+            object-fit: contain;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            /* Material guideline: Apply rounded corners to images */
+        }
+
+        /* Search bar styles */
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: none;
+            border-radius: 4px;
+            outline: none;
+            background-color: #444;
+            color: #fff;
+        }
+
+        /* Material guideline: Add box shadow to the search bar for a card-like appearance */
+        input[type="text"]:focus {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Material guideline: Style the placeholder text */
+        input[type="text"]::placeholder {
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <!-- Search bar for sidebar -->
+        <input type="text" id="sidebarSearch" placeholder="Search games..." oninput="filterSidebarGames()" />
+
+        <!-- Game links container -->
+        <div id="gameLinks"></div>
+    </div>
+    <div class="main">
+        <!-- Search bar for gameInfo -->
+        <input type="text" id="gameInfoSearch" placeholder="Search products..." oninput="filterGameInfo()" />
+
+        <!-- Game information container -->
+        <h1 class="mt-4 mb-4">Game Top Up Products</h1>
+        <div id="gameInfo"></div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fetch game data from the API
+            fetch("https://api.vcash.id/v1/product?keyword=")
+                .then((response) => response.json())
+                .then((gameData) => {
+                    // Extract slugs from the fetched data
+                    const slugs = gameData.map((game) => game.slug);
+
+                    // Generate game links
+                    const games = slugs.map((slug) => ({ link: slug }));
+
+                    // Load game links dynamically
+                    const gameLinksContainer = document.getElementById("gameLinks");
+                    games.forEach((game) => {
+                        fetch(`https://api.vcash.id/v1/product/${game.link}/membership`)
+                            .then((response) => response.json())
+                            .then((jsonData) => {
+                                const card = document.createElement("div");
+                                card.className = "card";
+
+                                const link = document.createElement("a");
+                                link.href = `javascript:void(0);`;
+                                link.onclick = () => loadGameData(game.link);
+
+                                const logo = document.createElement("img");
+                                logo.src =
+                                    jsonData.logoUrl ||
+                                    "https://wiki.dave.eu/images/4/47/Placeholder.png"; // Use placeholder if iconUrl is null
+                                logo.className = "logo";
+
+                                const text = document.createElement("div");
+                                text.className = "sidebar-text";
+                                text.textContent = jsonData.title;
+
+                                link.appendChild(logo);
+                                link.appendChild(text);
+                                card.appendChild(link);
+                                gameLinksContainer.appendChild(card);
+                            })
+                            .catch((error) => console.error("Error fetching data:", error));
+                    });
+
+                    // Load data for the first game by default
+                    loadGameData(games[0].link);
+
+                    // Filter sidebar games based on input
+                    window.filterSidebarGames = function () {
+                        const input = document
+                            .getElementById("sidebarSearch")
+                            .value.toLowerCase();
+                        const cards = gameLinksContainer.getElementsByClassName("card");
+
+                        Array.from(cards).forEach((card) => {
+                            const text = card.textContent || card.innerText;
+                            card.style.display = text.toLowerCase().includes(input)
+                                ? "block"
+                                : "none";
+                        });
+                    };
+
+                    // Filter gameInfo based on input
+                    window.filterGameInfo = function () {
+                        const input = document
+                            .getElementById("gameInfoSearch")
+                            .value.toLowerCase();
+                        const gameInfoContainer = document.getElementById("gameInfo");
+                        const gameCards =
+                            gameInfoContainer.getElementsByClassName("game-info-card");
+
+                        Array.from(gameCards).forEach((gameCard) => {
+                            const text = gameCard.textContent || gameCard.innerText;
+                            gameCard.style.display = text.toLowerCase().includes(input)
+                                ? "block"
+                                : "none";
+                        });
+                    };
+                })
+                .catch((error) => console.error("Error fetching game data:", error));
+        });
+
+        function loadGameData(selectedGame) {
+            const apiUrl = `https://api.vcash.id/v1/product/${selectedGame}/membership`;
+            const gameInfoContainer = document.getElementById("gameInfo");
+            gameInfoContainer.innerHTML = ""; // Clear previous data
+
+            fetch(apiUrl)
+                .then((response) => response.json())
+                .then((jsonData) => {
+                    // Check maintenance and active status
+                    if (jsonData.isMaintenance) {
+                        gameInfoContainer.textContent =
+                            "Game is currently in maintenance.";
+                        return;
+                    }
+
+                    if (!jsonData.isActive) {
+                        gameInfoContainer.textContent =
+                            "Game is not currently available.";
+                        return;
+                    }
+
+                    // Sort items by price
+                    const sortedItems = jsonData.items.sort(
+                        (a, b) => a.price - b.price
+                    );
+
+                    sortedItems.forEach((item) => {
+                        const gameInfo = document.createElement("div");
+                        gameInfo.className = "mb-4 game-info-card";
+
+                        // Open WhatsApp link on item click
+                        gameInfo.addEventListener("click", function () {
+                            const id = "YOUR GAME ID";
+                            const server = "YOUR GAME SERVER";
+                            const nick = "YOUR GAME NICK";
+                            const denom = item.name;
+                            const sisadm = "YOUR REMAINING DIAMONDS";
+                            const harga = formatPrice(item.price);
+
+                            const whatsappLink = `https://api.whatsapp.com/send?phone=6287784776041&text=*_FORMAT%20PEMESANAN_*%0AID%20(Server)%20%3A%20${id} (${server})%0ANickname%20%3A%20${nick}%0AOrder%20%3A%20${denom}%0ASisa%20Diamond%20%3A%20${sisadm}%0AHarga%20dalam%20Rupiah%20%3A%20${harga}%0A%0A%0ASS%20Profil%20%3A%0ASS%20DM%20Sebelum%20%3A%0ASS%2FFoto%20Bukti%20Bayar%20%3A%0A%0A*_TIDAK%20LENGKAP%3F%20TIDAK%20AKAN%20DI%20PROSES!_*`;
+
+                            window.open(whatsappLink);
+                        });
+
+                        gameInfo.innerHTML = `
+                            <img src="${item.iconUrl ||
+                            "https://wiki.dave.eu/images/4/47/Placeholder.png"
+                            }" class="logo" alt="${item.name}">
+                            <div class="game-title">${item.name}</div>
+                            <div class="price">${formatPrice(item.price)}</div>
+                        `;
+
+                        gameInfoContainer.appendChild(gameInfo);
+                    });
+                })
+                .catch((error) => console.error("Error fetching data:", error));
+
+            function formatPrice(price) {
+                // You can implement your own formatting logic here
+                // For example, you might want to use a library like Intl.NumberFormat for better formatting
+                return new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                }).format(price);
+            }
+        }
+    </script>
+</body>
+
+</html>
