@@ -12,7 +12,7 @@
             background-color: #121212;
             color: #fff;
             padding: 20px;
-            font-family: "Montserrat";
+            font-family: "Montserrat", ui-rounded;
         }
 
         .container {
@@ -254,7 +254,7 @@
                             .then((response) => response.json())
                             .then((jsonData) => {
                                 // Check if the game is active
-                                if (!jsonData.isActive) {
+                                if (!jsonData.isActive || jsonData.isMaintenance) {
                                     return; // Skip inactive games
                                 }
 
@@ -348,6 +348,9 @@
                     );
 
                     sortedItems.forEach((item) => {
+                        if (!item.isActive) {
+                            return; // Skip inactive items
+                        }
                         const gameInfo = document.createElement("div");
                         gameInfo.className = "mb-4 game-info-card";
 
