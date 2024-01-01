@@ -253,6 +253,11 @@
                         fetch(`https://api.vcash.id/v1/product/${game.link}/membership`)
                             .then((response) => response.json())
                             .then((jsonData) => {
+                                // Check if the game is active
+                                if (!jsonData.isActive) {
+                                    return; // Skip inactive games
+                                }
+
                                 const card = document.createElement("div");
                                 card.className = "card";
 
@@ -263,7 +268,7 @@
                                 const logo = document.createElement("img");
                                 logo.src =
                                     jsonData.logoUrl ||
-                                    "https://wiki.dave.eu/images/4/47/Placeholder.png"; // Use placeholder if iconUrl is null
+                                    "https://wiki.dave.eu/images/4/47/Placeholder.png";
                                 logo.className = "logo";
 
                                 const text = document.createElement("div");
